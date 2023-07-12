@@ -20,7 +20,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json(), cors());
 
 app.get('/', async (req, res) => {
-    const date = new Date(String(req.query.date));
+    const date = Object.keys(req.query).length > 0 ? new Date(String(req.query.date)) : new Date();
     res.status(200).send(await resolveDailyTrends(date)); //wait for daily trends to be fetched from db before sending to client
 });
 

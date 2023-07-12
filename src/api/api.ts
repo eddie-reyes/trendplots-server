@@ -7,9 +7,7 @@ export interface ResultsDictionary {
 
 export const fetchTrendData = async () => {
     try {
-        const { data } = await axios.get<ResultsDictionary>(
-            'https://lk11hk4mxh.execute-api.us-west-1.amazonaws.com/'
-        );
+        const { data } = await axios.get<ResultsDictionary>(process.env.API_ENDPOINT!);
         return data;
     } catch (error) {
         mutateDatabase();
