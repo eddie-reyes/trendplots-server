@@ -5,6 +5,8 @@ import { MoreThanOrEqual } from 'typeorm';
 import { Instance } from './entities/Instance';
 import { Trend } from './entities/Trend';
 
+import moment from 'moment-timezone';
+
 const DECAY_FACTOR = 0.5; //rate at which trends decay if trend is not in api results
 const MINIMUM_SIZE = 5;
 
@@ -15,7 +17,11 @@ export const mutateDatabase = async () => {
 
     const recentTrends = await orm.manager.find(Trend, {
         //get trends that were updated in the previous hour (could include current trends and/or decaying trends)
-        where: { updatedAt: MoreThanOrEqual(getPreviousHour(new Date())) },
+        where: {
+            updatedAt: MoreThanOrEqual(
+                getPreviousHour(new Date(moment().tz('America/Los_Angeles').format()))
+            ),
+        },
     });
 
     for (const key in apiResults) {
@@ -71,11 +77,11 @@ const decayInstance = async (trend: Trend) => {
 };
 
 const saveDatabase = async (trend: Trend, instance: Instance) => {
-    trend.updatedAt = new Date();
+    trend.updatedAt = new Date(moment().tz('America/Los_Angeles').format());
     await orm.manager.save(trend);
 
     //value of key (int)
-    instance.createdAt = new Date();
+    instance.createdAt = new Date(moment().tz('America/Los_Angeles').format());
     instance.trend = trend; //many to one relation
     await orm.manager.save(instance);
 };
