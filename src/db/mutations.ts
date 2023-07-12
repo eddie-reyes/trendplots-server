@@ -49,8 +49,6 @@ export const mutateDatabase = async () => {
         //decay instances not in api results
         await decayInstance(trend);
     }
-
-    console.log(`database mutated at ${new Date()}`);
 };
 
 const createNewInstance = (trend: Trend, key: string, apiResults: ResultsDictionary) => {
