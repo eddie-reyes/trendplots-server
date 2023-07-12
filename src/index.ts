@@ -15,6 +15,8 @@ orm.initialize()
 
 const app = express();
 
+const port = process.env.PORT || 3000;
+
 app.use(express.json(), cors());
 
 app.get('/', async (req, res) => {
@@ -22,7 +24,7 @@ app.get('/', async (req, res) => {
     res.status(200).send(await resolveDailyTrends(date)); //wait for daily trends to be fetched from db before sending to client
 });
 
-app.listen(3000);
+app.listen(port);
 
 const tick = () => {
     let minute = new Date().getMinutes();
