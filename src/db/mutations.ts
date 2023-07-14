@@ -8,10 +8,14 @@ import { Trend } from './entities/Trend';
 const DECAY_FACTOR = 0.5; //rate at which trends decay if trend is not in api results
 const MINIMUM_SIZE = 5;
 
+let isMutating = false;
+
 export const mutateDatabase = async () => {
     const apiResults = await fetchTrendData(); //get results dictionary from api
 
-    if (!apiResults) return; //if api returns error, do nothing
+    if (!apiResults || isMutating) return; //if api returns error, do nothing
+
+    isMutating = true;
 
     const recentTrends = await orm.manager.find(Trend, {
         //get trends that were updated in the previous hour (could include current trends and/or decaying trends)
@@ -45,6 +49,8 @@ export const mutateDatabase = async () => {
         //decay instances not in api results
         await decayInstance(trend);
     }
+
+    isMutating = false;
 };
 
 const createNewInstance = (trend: Trend, key: string, apiResults: ResultsDictionary) => {
