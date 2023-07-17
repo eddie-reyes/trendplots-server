@@ -6,8 +6,6 @@ import express from 'express';
 import cors from 'cors';
 import 'reflect-metadata';
 
-export let currentTime: Date;
-
 orm.initialize()
     .then(() => {
         setInterval(tick, 60000);
@@ -32,7 +30,6 @@ const tick = () => {
     let minute = new Date().getMinutes();
 
     if (minute === 0) {
-        currentTime = new Date();
-        mutateDatabase();
+        mutateDatabase(new Date());
     }
 };

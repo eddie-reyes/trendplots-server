@@ -8,8 +8,8 @@ import { Trend } from './entities/Trend';
 const DECAY_FACTOR = 0.9; //rate at which trends decay if trend is not in api results
 const MINIMUM_SIZE = 5;
 
-export const mutateDatabase = async () => {
-    const apiResults = await fetchTrendData(); //get results dictionary from api
+export const mutateDatabase = async (dateAtMutatation: Date) => {
+    const apiResults = await fetchTrendData(dateAtMutatation); //get results dictionary from api
 
     if (!apiResults) return; //if api returns error, do nothing
 
