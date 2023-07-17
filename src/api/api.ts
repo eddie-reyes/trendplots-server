@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { mutateDatabase } from '../db/mutations';
-import { currentTime } from 'src/index';
+import { currentTime } from '../index';
 
 export interface ResultsDictionary {
     [index: string]: number;

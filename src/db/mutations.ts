@@ -5,7 +5,7 @@ import { MoreThanOrEqual } from 'typeorm';
 import { Instance } from './entities/Instance';
 import { Trend } from './entities/Trend';
 
-const DECAY_FACTOR = 0.5; //rate at which trends decay if trend is not in api results
+const DECAY_FACTOR = 0.9; //rate at which trends decay if trend is not in api results
 const MINIMUM_SIZE = 5;
 
 export const mutateDatabase = async () => {
