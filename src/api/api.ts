@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { mutateDatabase } from '../db/mutations';
+import { currentTime } from 'src/index';
 
 export interface ResultsDictionary {
     [index: string]: number;
@@ -10,7 +11,9 @@ export const fetchTrendData = async () => {
         const { data } = await axios.get<ResultsDictionary>(process.env.API_ENDPOINT!);
         return data;
     } catch (error) {
-        mutateDatabase();
+        if (new Date().getTime() < currentTime.setHours(currentTime.getHours() + 1)) {
+            mutateDatabase();
+        }
 
         return null;
     }
