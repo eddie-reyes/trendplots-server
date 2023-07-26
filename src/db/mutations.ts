@@ -13,12 +13,12 @@ export const mutateDatabase = async (dateAtMutatation: Date) => {
 
     if (!apiResults) return; //if api returns error, do nothing
 
-    const recentTrends = await orm.manager.find(Trend, {
-        //get trends that were updated in the previous hour (could include current trends and/or decaying trends)
-        where: {
-            updatedAt: MoreThanOrEqual(getPreviousHour(new Date())),
-        },
-    });
+    // const recentTrends = await orm.manager.find(Trend, {
+    //     //get trends that were updated in the previous hour (could include current trends and/or decaying trends)
+    //     where: {
+    //         updatedAt: MoreThanOrEqual(getPreviousHour(new Date())),
+    //     },
+    // });
 
     for (const key in apiResults) {
         if (apiResults[key] <= MINIMUM_SIZE) continue; //dont allow trends under minimum size
@@ -29,9 +29,9 @@ export const mutateDatabase = async (dateAtMutatation: Date) => {
             //new instance for current trend
             createNewInstance(currentTrend, key, apiResults);
             //remove from recent trends if it was in previous mutation and let it persist
-            if (recentTrends.includes(currentTrend)) {
-                recentTrends.splice(recentTrends.indexOf(currentTrend), 1);
-            }
+            // if (recentTrends.includes(currentTrend)) {
+            //     recentTrends.splice(recentTrends.indexOf(currentTrend), 1);
+            // }
         } else {
             //if need new trend
             const newTrend = new Trend();
@@ -41,10 +41,10 @@ export const mutateDatabase = async (dateAtMutatation: Date) => {
         }
     }
 
-    for (const trend of recentTrends) {
-        //decay instances not in api results
-        await decayInstance(trend);
-    }
+    // for (const trend of recentTrends) {
+    //     //decay instances not in api results
+    //     await decayInstance(trend);
+    // }
 };
 
 const createNewInstance = (trend: Trend, key: string, apiResults: ResultsDictionary) => {
