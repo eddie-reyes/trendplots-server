@@ -30,6 +30,6 @@ const tick = () => {
     let minute = new Date().getMinutes();
 
     if (minute === 0) {
-        mutateDatabase(new Date());
+        mutateDatabase();
     }
 };

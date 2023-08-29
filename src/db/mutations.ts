@@ -1,24 +1,15 @@
 import { fetchTrendData, ResultsDictionary } from '../api/api';
-import { getPreviousHour } from '../utils/dates';
 import { orm } from './data-source';
-import { MoreThanOrEqual } from 'typeorm';
 import { Instance } from './entities/Instance';
 import { Trend } from './entities/Trend';
 
 const DECAY_FACTOR = 0.9; //rate at which trends decay if trend is not in api results
 const MINIMUM_SIZE = 5;
 
-export const mutateDatabase = async (dateAtMutatation: Date) => {
-    const apiResults = await fetchTrendData(dateAtMutatation); //get results dictionary from api
+export const mutateDatabase = async () => {
+    const apiResults = await fetchTrendData(); //get results dictionary from api
 
     if (!apiResults) return; //if api returns error, do nothing
-
-    // const recentTrends = await orm.manager.find(Trend, {
-    //     //get trends that were updated in the previous hour (could include current trends and/or decaying trends)
-    //     where: {
-    //         updatedAt: MoreThanOrEqual(getPreviousHour(new Date())),
-    //     },
-    // });
 
     for (const key in apiResults) {
         if (apiResults[key] <= MINIMUM_SIZE) continue; //dont allow trends under minimum size
@@ -28,10 +19,6 @@ export const mutateDatabase = async (dateAtMutatation: Date) => {
         if (currentTrend) {
             //new instance for current trend
             createNewInstance(currentTrend, key, apiResults);
-            //remove from recent trends if it was in previous mutation and let it persist
-            // if (recentTrends.includes(currentTrend)) {
-            //     recentTrends.splice(recentTrends.indexOf(currentTrend), 1);
-            // }
         } else {
             //if need new trend
             const newTrend = new Trend();
@@ -40,32 +27,11 @@ export const mutateDatabase = async (dateAtMutatation: Date) => {
             createNewInstance(newTrend, key, apiResults);
         }
     }
-
-    // for (const trend of recentTrends) {
-    //     //decay instances not in api results
-    //     await decayInstance(trend);
-    // }
 };
 
 const createNewInstance = (trend: Trend, key: string, apiResults: ResultsDictionary) => {
     const instance = new Instance();
     instance.value = apiResults[key];
-
-    saveDatabase(trend, instance);
-};
-
-const decayInstance = async (trend: Trend) => {
-    const currentInstance = await orm.manager.findOneBy(Instance, {
-        trend: trend, //find first trend relationship for instance
-    });
-
-    //decay instance by decay factor
-    const decayedValue = currentInstance ? Math.floor(currentInstance.value * DECAY_FACTOR) : 0;
-
-    if (decayedValue <= MINIMUM_SIZE) return; //dont update instance if below minimum size
-
-    const instance = new Instance();
-    instance.value = decayedValue;
 
     saveDatabase(trend, instance);
 };

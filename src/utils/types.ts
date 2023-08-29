@@ -1,9 +1,9 @@
-export interface DailyInstance {
+export type DailyInstance = {
     hour: number;
     value: number;
-}
+};
 
-export interface DailyTrend {
+export type DailyTrend = {
     name: string;
     instances: DailyInstance[];
-}
+};
